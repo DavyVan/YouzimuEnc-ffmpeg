@@ -19,10 +19,10 @@ app.on('ready', function () {
     mainWin.loadURL('file://' + __dirname + '/app/init.html');
     mainWin.webContents.openDevTools({mode: 'detach'});
 
-    ipcMain.on('init', (event, str)=>{
+    ipcMain.on('init', (event, display_str, ffmpeg_version_str, ffprobe_version_str)=>{
         mainWin.webContents.loadURL('file://' + __dirname + '/app/index.html');
         mainWin.webContents.on('did-finish-load', ()=>{
-            mainWin.webContents.send('gpuinfo', str);
+            mainWin.webContents.send('gpuinfo', display_str, ffmpeg_version_str, ffprobe_version_str);
         });
     });
 });

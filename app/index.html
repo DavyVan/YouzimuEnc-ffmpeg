@@ -1,10 +1,54 @@
 <html>
     <head>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <style>
+            #display-div {
+                font-size: 10;
+            }
 
+            #video-input-group {
+                margin-top: 20px;
+                /* margin-bottom: 0px; */
+            }
 
+            #ass-input-group, #output-group {
+                margin-top: 5px;
+            }
+        </style>
     </head>
     <body>
-        <h1 id="gpuinfo">Hello World!</h1>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-10 text-center" id="display-div"></div>
+            </div>
+            <div class="input-group" id="video-input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">视频</span>
+                </div>
+                <input type="text" class="form-control" id="video-input-filename" placeholder="选择需要压制的视频，可拖拽至此">
+                <div class="input-group-append">
+                    <button class="btn btn-info" type="button" id="choose-video-input">选择文件...</button>
+                </div>
+            </div>
+            <div class="input-group" id="ass-input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">字幕</span>
+                </div>
+                <input type="text" class="form-control" id="ass-input-filename" placeholder="选择字幕，可拖拽至此">
+                <div class="input-group-append">
+                    <button class="btn btn-info" type="button" id="choose-ass-input">选择文件...</button>
+                </div>
+            </div>
+            <div class="input-group" id="output-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">输出</span>
+                </div>
+                <input type="text" class="form-control" id="output-filename" placeholder="选择输出位置">
+                <div class="input-group-append">
+                    <button class="btn btn-info" type="button" id="choose-output">选择文件...</button>
+                </div>
+            </div>
+        </div>
         <script src="js/index.js"></script>
     </body>
 </html>
