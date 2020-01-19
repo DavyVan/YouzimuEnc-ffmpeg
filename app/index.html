@@ -2,32 +2,25 @@
     <head>
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <style>
-            .input-group * {
+            * {
                 font-size: 85%;
                 /* line-height: 50%; */
                 /* height: 75%; */
+            }
+
+            .text-center span {
+                font-size: 12px;
             }
 
             #display-div {
                 font-size: 10;
             }
 
-            #video-input-group {
-                margin-top: 20px;
-                /* margin-bottom: 0px; */
-            }
-
-            #ass-input-group, #output-group {
-                margin-top: 5px;
-            }
-
-            #bitrate-control-row {
-                margin-top: 10px;
-            }
             #bitrate-control-row .col {
                 /* padding-right: 2px; */
                 padding-left: 2px;
             }
+
             #bitrate-control-row input {
                 padding-left: 5px;
                 padding-right: 5px;
@@ -36,6 +29,7 @@
             #bitrate-mode-group {
                 width: 50%;
             }
+
             #target-bitrate-group,#max-bitrate-group {
                 width: 10%;
             }
@@ -46,16 +40,25 @@
             <div class="row justify-content-center">
                 <div class="col-10 text-center" id="display-div"></div>
             </div>
-            <div class="input-group" id="video-input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">视频</span>
-                </div>
-                <input type="text" class="form-control" id="video-input-filename" placeholder="选择需要压制的视频，可拖拽至此">
-                <div class="input-group-append">
-                    <button class="btn btn-info" type="button" id="choose-video-input">选择文件...</button>
+            <div class="row mt-3">
+                <div class="input-group col" id="video-input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">视频</span>
+                    </div>
+                    <input type="text" class="form-control" id="video-input-filename" placeholder="选择需要压制的视频，可拖拽至此">
+                    <div class="input-group-append">
+                        <button class="btn btn-info" type="button" id="choose-video-input">选择文件...</button>
+                    </div>
                 </div>
             </div>
-            <div class="input-group" id="ass-input-group">
+            <div class="row mt-1">
+                <div class="col text-center" id="input-video-info">
+                    <span style="margin-right: 20px;">输入视频 帧率：<span>60</span> FPS</span>
+                    <span style="margin-right: 20px;">分辨率：<span>1920x1080</span></span>
+                    <span>时长：<span>1m20s</span></span>
+                </div>
+            </div>
+            <div class="input-group mt-1" id="ass-input-group">
                 <div class="input-group-prepend">
                   <span class="input-group-text">字幕</span>
                 </div>
@@ -64,7 +67,10 @@
                     <button class="btn btn-info" type="button" id="choose-ass-input">选择文件...</button>
                 </div>
             </div>
-            <div class="input-group" id="output-group">
+            <div class="row mt-1">
+                <div class="col text-center" id="input-video-info"><span>输入字幕 分辨率：<span>1920x1080</span></span></div>
+            </div>
+            <div class="input-group mt-1" id="output-group">
                 <div class="input-group-prepend">
                   <span class="input-group-text">输出</span>
                 </div>
@@ -73,7 +79,14 @@
                     <button class="btn btn-info" type="button" id="choose-output">选择文件...</button>
                 </div>
             </div>
-            <div class="row" id="bitrate-control-row">
+            <div class="row mt-1">
+                <div class="col text-center" id="input-video-info">
+                    <span style="margin-right: 20px;">输出视频 帧率：<span>60</span> FPS</span>
+                    <span style="margin-right: 20px;">分辨率：<span>1920x1080</span></span>
+                    <span>时长：<span>1m20s</span></span>
+                </div>
+            </div>
+            <div class="row mt-2" id="bitrate-control-row">
                 <div class="col-5" id="bitrate-mode-group">
                     <div class="input-group">
                         <div class="input-group-prepend">
@@ -108,6 +121,37 @@
                             <span class="input-group-text">Mbps</span>
                         </div>
                     </div>
+                </div>
+                <div class="col" id="crf-group" hidden>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">CRF</span>
+                        </div>
+                        <input type="number" class="form-control" max="51" value="23" maxlength="2" step="1" id="crf-input">
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-4" id="preset-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                          <label class="input-group-text" for="preset-select">Preset</label>
+                        </div>
+                        <select class="custom-select" id="preset-select">
+                          <option value="0">ultrafast</option>
+                          <option value="1">superfast</option>
+                          <option value="2">veryfast</option>
+                          <option value="3">faster</option>
+                          <option value="4">fast</option>
+                          <option value="5">medium</option>
+                          <option value="6" selected>slow</option>
+                          <option value="7">slower</option>
+                          <option value="8">veryslow</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-outline-info btn-block">直接编辑命令行，会无视当前界面参数设置，进阶用户专用！！</button>
                 </div>
             </div>
         </div>
