@@ -58,7 +58,7 @@
                     <span>时长：<span>1m20s</span></span>
                 </div>
             </div>
-            <div class="input-group mt-1" id="ass-input-group">
+            <div class="input-group mt-3" id="ass-input-group">
                 <div class="input-group-prepend">
                   <span class="input-group-text">字幕</span>
                 </div>
@@ -70,7 +70,7 @@
             <div class="row mt-1">
                 <div class="col text-center" id="input-video-info"><span>输入字幕 分辨率：<span>1920x1080</span></span></div>
             </div>
-            <div class="input-group mt-1" id="output-group">
+            <div class="input-group mt-3" id="output-group">
                 <div class="input-group-prepend">
                   <span class="input-group-text">输出</span>
                 </div>
@@ -86,7 +86,7 @@
                     <span>时长：<span>1m20s</span></span>
                 </div>
             </div>
-            <div class="row mt-2" id="bitrate-control-row">
+            <div class="row mt-3" id="bitrate-control-row">
                 <div class="col-5" id="bitrate-mode-group">
                     <div class="input-group">
                         <div class="input-group-prepend">
@@ -131,7 +131,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mt-2">
+            <div class="row mt-3">
                 <div class="col-4" id="preset-group">
                     <div class="input-group">
                         <div class="input-group-prepend">
@@ -152,6 +152,17 @@
                 </div>
                 <div class="col">
                     <button type="button" class="btn btn-outline-info btn-block">直接编辑命令行，会无视当前界面参数设置，进阶用户专用！！</button>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-10">
+                    <div class="progress" style="height: 100%;">
+                        <div class="text-center" style="position: absolute; width: 100%;"><span style="font-size: 20px;" id="progress-text"></span></div>
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 0%;" id="progress-bar"></div>
+                    </div>
+                </div>
+                <div class="col-2" style="padding-left: 0px;">
+                    <button type="button" class="btn btn-info" style="width: 100%;" disabled>开始</button>
                 </div>
             </div>
         </div>
