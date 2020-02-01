@@ -15,7 +15,9 @@
     "url": "https://github.com/DavyVan/YouzimuEnc-ffmpeg/issues"
   },
   "homepage": "https://github.com/DavyVan/YouzimuEnc-ffmpeg#readme",
-  "dependencies": {},
+  "dependencies": {
+    "animate.css": "^3.7.2"
+  },
   "devDependencies": {
     "electron": "^7.1.7"
   }

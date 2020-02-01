@@ -1,11 +1,13 @@
 <html>
     <head>
         <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="../node_modules/animate.css/animate.min.css">
         <style>
             * {
                 font-size: 85%;
                 /* line-height: 50%; */
                 /* height: 75%; */
+                user-select: none;
             }
 
             .text-center span {
@@ -45,7 +47,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text">视频</span>
                     </div>
-                    <input type="text" class="form-control" id="video-input-filename" placeholder="选择需要压制的视频，可拖拽至此">
+                    <input type="text" class="form-control" id="video-input-filename" placeholder="选择需要压制的视频，可拖拽至此" readonly>
                     <div class="input-group-append">
                         <button class="btn btn-info" type="button" id="choose-video-input">选择文件...</button>
                     </div>
@@ -62,7 +64,7 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text">字幕</span>
                 </div>
-                <input type="text" class="form-control" id="ass-input-filename" placeholder="选择字幕，可拖拽至此">
+                <input type="text" class="form-control" id="ass-input-filename" placeholder="选择字幕，可拖拽至此" readonly>
                 <div class="input-group-append">
                     <button class="btn btn-info" type="button" id="choose-ass-input">选择文件...</button>
                 </div>
@@ -74,7 +76,7 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text">输出</span>
                 </div>
-                <input type="text" class="form-control" id="output-filename" placeholder="选择输出位置">
+                <input type="text" class="form-control" id="output-filename" placeholder="选择输出位置" readonly>
                 <div class="input-group-append">
                     <button class="btn btn-info" type="button" id="choose-output">选择文件...</button>
                 </div>
