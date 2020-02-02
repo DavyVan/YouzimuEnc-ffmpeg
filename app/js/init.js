@@ -2,6 +2,7 @@
 const process = require('process');
 const child_process = require('child_process');
 const {ipcRenderer} = require('electron');
+const utils = require('./js/utils.js');
 
 // Check the OS
 var os = process.platform;      // darwin or win32
@@ -32,7 +33,7 @@ if (os === 'darwin') {
 }
 
 try {
-    stdout = child_process.execFileSync('bin/ffmpeg.exe', ['-version'], {windowsHide: true});
+    stdout = child_process.execFileSync(utils.getFFMPEG(), ['-version'], {windowsHide: true});
 } catch (error) {
     document.getElementById('text').innerHTML = `检测 ffmpeg 时错误<br>错误代码：${error.code}<br>错误信息：${error.message}`;
     throw error;    // To terminate the script execution
@@ -41,7 +42,7 @@ let _t = stdout.toString().split(' ');
 ffmpeg_version_str = `${_t[0]} ${_t[1]} ${_t[2]}`;
 
 try {
-    stdout = child_process.execFileSync('bin/ffprobe.exe', ['-version'], {windowsHide: true});
+    stdout = child_process.execFileSync(utils.getFFPROBE(), ['-version'], {windowsHide: true});
 } catch (error) {
     document.getElementById('text').innerHTML = `检测 ffprobe 时错误<br>错误代码：${error.code}<br>错误信息：${error.message}`;
     throw error;    // To terminate the script execution
