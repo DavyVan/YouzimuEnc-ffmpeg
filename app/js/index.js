@@ -3,6 +3,8 @@
 const {ipcRenderer, remote} = require('electron');
 const {dialog} = remote;
 const path = require('path');
+const child_process = require('child_process');
+const utils = require('./js/utils.js');
 
 var containerEl = document.querySelector('body');
 var chooseVideoInputButtonEl = document.getElementById('choose-video-input');
@@ -10,10 +12,24 @@ var videoInputFilenameEl = document.getElementById('video-input-filename');
 var chooseAssInputButtonEl = document.getElementById('choose-ass-input');
 var assInputFilenameEl = document.getElementById('ass-input-filename');
 var progressTextEl = document.getElementById('progress-text');
+var videoOutputFilenameEl = document.getElementById('output-filename');
+
+var inputVideoFPSEl = document.getElementById('input-video-fps');
+var inputVideoResEl = document.getElementById('input-video-res');
+var inputVideoDurationEl = document.getElementById('input-video-duration');
+var outputVideoFPSEl = document.getElementById('output-video-fps');
+var outputVideoResEl = document.getElementById('output-video-res');
+var outputVideoDurationEl = document.getElementById('output-video-duration');
 
 var videoInputFilename = null;
-var videoInfo = null;
+var videoOutputFilename = null;
 var assInputFilename = null;
+
+// media info
+var width = 0;
+var height = 0;
+var fps = 0.0;
+var duration = {m: 0, s: 0};
 
 // Display GPU infomation and ffmpeg/ffprobe version
 ipcRenderer.on('gpuinfo', (event, display_str, ffmpeg_version_str, ffprobe_version_str)=>{
@@ -27,13 +43,11 @@ chooseVideoInputButtonEl.addEventListener('click', ()=>{
         buttonLabel: '选择',
         filters: [{name: '支持的视频格式', extensions: ['mp4']}],
         properties: ['openFile']
-    });
+    })[0];
     
     if (filename !== undefined) {
-        videoInputFilenameEl.setAttribute('value', filename);
-        // submitButtonEl.removeAttribute('disabled');
-        videoInputFilename = filename;
-        console.log(filename);
+        videoInputSelected(filename);
+        // console.log(filename);
     } else {
         console.log("User cancelled video input file selection.");
     }
@@ -55,9 +69,33 @@ function videoInputSelected(filepath) {
     progressTextAlertClear();
     videoInputFilename = filepath;
     videoInputFilenameEl.setAttribute('value', filepath);
+    console.log(filepath);
 
+    // Detect media info using ffprobe
+    child_process.execFile(utils.getFFPROBE(), ['-print_format', 'json', '-v', 'quiet', '-show_streams', '-i', videoInputFilename], {windowsHide: true}, (error, stdout, stderr)=>{
+        let resultJSON = JSON.parse(stdout);
+        let vStream = resultJSON.streams[0];
+        width = vStream.width;
+        height = vStream.height;
+        fps = eval(vStream.avg_frame_rate).toFixed(3);
+        duration.m = Math.floor(parseFloat(vStream.duration) / 60);
+        duration.s = Math.round(parseFloat(vStream.duration) - duration.m * 60);
 
-    // TODO: detect video info; display; set output path and filename
+        // display
+        inputVideoFPSEl.innerHTML = fps;
+        inputVideoResEl.innerHTML = `${width}x${height}`;
+        inputVideoDurationEl.innerHTML = `${duration.m}m${duration.s}s`;
+        outputVideoFPSEl.innerHTML = fps;
+        outputVideoResEl.innerHTML = `${width}x${height}`;
+        outputVideoDurationEl.innerHTML = `${duration.m}m${duration.s}s`;
+    });
+
+    // Set output path
+    let pathObj = path.parse(videoInputFilename);
+    pathObj.name = `${pathObj.name}_output`;
+    delete pathObj.base;    // path.format() will ignore name and ext if base exists.
+    videoOutputFilename = path.format(pathObj);
+    videoOutputFilenameEl.setAttribute('value', videoOutputFilename);
 }
 
 function assInputSelected(filepath) {
