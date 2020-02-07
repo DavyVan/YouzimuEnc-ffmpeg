@@ -4,6 +4,9 @@ const {ipcRenderer, remote} = require('electron');
 const {dialog} = remote;
 const path = require('path');
 const child_process = require('child_process');
+const ass_compiler = require('ass-compiler');
+const fs = require('fs');
+
 const utils = require('./js/utils.js');
 
 var containerEl = document.querySelector('body');
@@ -13,6 +16,7 @@ var chooseAssInputButtonEl = document.getElementById('choose-ass-input');
 var assInputFilenameEl = document.getElementById('ass-input-filename');
 var progressTextEl = document.getElementById('progress-text');
 var videoOutputFilenameEl = document.getElementById('output-filename');
+var chooseOutputButtonEl = document.getElementById('choose-output');
 
 var inputVideoFPSEl = document.getElementById('input-video-fps');
 var inputVideoResEl = document.getElementById('input-video-res');
@@ -20,6 +24,9 @@ var inputVideoDurationEl = document.getElementById('input-video-duration');
 var outputVideoFPSEl = document.getElementById('output-video-fps');
 var outputVideoResEl = document.getElementById('output-video-res');
 var outputVideoDurationEl = document.getElementById('output-video-duration');
+
+var inputAssInfoEl = document.getElementById('input-ass-info');
+var inputAssResEl = document.getElementById('input-ass-res');
 
 var videoInputFilename = null;
 var videoOutputFilename = null;
@@ -30,6 +37,11 @@ var width = 0;
 var height = 0;
 var fps = 0.0;
 var duration = {m: 0, s: 0};
+// ass info
+var assWidth = 0;
+var assHeight = 0;
+
+var userChosenOutputPath = false;
 
 // Display GPU infomation and ffmpeg/ffprobe version
 ipcRenderer.on('gpuinfo', (event, display_str, ffmpeg_version_str, ffprobe_version_str)=>{
@@ -43,13 +55,53 @@ chooseVideoInputButtonEl.addEventListener('click', ()=>{
         buttonLabel: '选择',
         filters: [{name: '支持的视频格式', extensions: ['mp4']}],
         properties: ['openFile']
-    })[0];
+    });
     
     if (filename !== undefined) {
-        videoInputSelected(filename);
+        videoInputSelected(filename[0]);
         // console.log(filename);
     } else {
         console.log("User cancelled video input file selection.");
+    }
+});
+
+chooseAssInputButtonEl.addEventListener('click', ()=>{
+    let filename = dialog.showOpenDialogSync(remote.getCurrentWindow(), {
+        title: '选择字幕文件',
+        buttonLabel: '选择',
+        filters: [{name: 'ASS字幕文件', extensions: ['ass']}],
+        properties: ['openFile']
+    });
+
+    if (filename !== undefined) {
+        assInputSelected(filename[0]);
+    } else {
+        console.log("User cancelled ass input file selection.");
+    }
+});
+
+chooseOutputButtonEl.addEventListener('click', ()=>{
+    let _default = undefined;
+    if (videoInputFilename != null) {
+        let pathObj = path.parse(videoInputFilename);
+        pathObj.name = `${pathObj.name}_output`;
+        delete pathObj.base;    // path.format() will ignore name and ext if base exists.
+        _default = path.format(pathObj);
+    }
+
+    let filename = dialog.showSaveDialogSync(remote.getCurrentWindow(), {
+        title: '选择输出位置',
+        defaultPath: _default,
+        filters: [{name: '输出格式', extensions: ['mp4']}],
+        properties: ['createDirectory', 'showOverwriteConfirmation']
+    });
+    
+    if (filename != undefined) {
+        videoOutputFilename = filename;
+        videoOutputFilenameEl.setAttribute('value', videoOutputFilename);
+        userChosenOutputPath = true;
+    } else {
+        console.log("User cancelled onput file selection.");
     }
 });
 
@@ -88,21 +140,57 @@ function videoInputSelected(filepath) {
         outputVideoFPSEl.innerHTML = fps;
         outputVideoResEl.innerHTML = `${width}x${height}`;
         outputVideoDurationEl.innerHTML = `${duration.m}m${duration.s}s`;
+
+        // check resolution against subtitle
+        checkRes();
     });
 
     // Set output path
-    let pathObj = path.parse(videoInputFilename);
-    pathObj.name = `${pathObj.name}_output`;
-    delete pathObj.base;    // path.format() will ignore name and ext if base exists.
-    videoOutputFilename = path.format(pathObj);
-    videoOutputFilenameEl.setAttribute('value', videoOutputFilename);
+    if (!userChosenOutputPath) {
+        let pathObj = path.parse(videoInputFilename);
+        pathObj.name = `${pathObj.name}_output`;
+        delete pathObj.base;    // path.format() will ignore name and ext if base exists.
+        videoOutputFilename = path.format(pathObj);
+        videoOutputFilenameEl.setAttribute('value', videoOutputFilename);
+    }
+}
+
+function checkRes() {
+    if (videoInputFilename != null && assInputFilename != null && 
+        assWidth != 0 && width != 0 && assHeight != 0 && height != 0) {
+        if ((assWidth != width) || (assHeight != height)) {
+            console.log(assWidth, width, assHeight, height);
+            inputAssResEl.innerHTML += '  字幕分辨率和视频不一致！';
+            inputAssInfoEl.classList.add('text-danger');
+        } else {
+            inputAssResEl.innerHTML = `${assWidth}x${assHeight}`;
+            inputAssInfoEl.classList.remove('text-danger');
+            console.log('res checked');
+        }
+    }
 }
 
 function assInputSelected(filepath) {
     progressTextAlertClear();
     assInputFilename = filepath;
     assInputFilenameEl.setAttribute('value', filepath);
-    // TODO: detect ass info; display, compare (consider the selection order)
+    console.log(filepath);
+
+    // read video info from subtitle
+    fs.readFile(assInputFilename, (error, data)=>{
+        if (error) {
+            console.log(error);
+            return;
+        }
+
+        let parsedASS = ass_compiler.parse(data.toString());
+        assWidth = parsedASS.info.PlayResX;
+        assHeight = parsedASS.info.PlayResY;
+        inputAssResEl.innerHTML = `${assWidth}x${assHeight}`;
+
+        // check
+        checkRes();
+    });
 }
 
 // Choose video input file, dragndrop
