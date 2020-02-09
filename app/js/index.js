@@ -8,13 +8,14 @@ const ass_compiler = require('ass-compiler');
 const fs = require('fs');
 
 const utils = require('./js/utils.js');
+const cmd = require('./js/cmd.js');
 
 var containerEl = document.querySelector('body');
+
 var chooseVideoInputButtonEl = document.getElementById('choose-video-input');
 var videoInputFilenameEl = document.getElementById('video-input-filename');
 var chooseAssInputButtonEl = document.getElementById('choose-ass-input');
 var assInputFilenameEl = document.getElementById('ass-input-filename');
-var progressTextEl = document.getElementById('progress-text');
 var videoOutputFilenameEl = document.getElementById('output-filename');
 var chooseOutputButtonEl = document.getElementById('choose-output');
 
@@ -27,6 +28,19 @@ var outputVideoDurationEl = document.getElementById('output-video-duration');
 
 var inputAssInfoEl = document.getElementById('input-ass-info');
 var inputAssResEl = document.getElementById('input-ass-res');
+
+var bitrateModeSelectEl = document.getElementById('bitrate-mode-select');
+var targetBitrateGroupEl = document.getElementById('target-bitrate-group');
+var maxBitrateGroupEl = document.getElementById('max-bitrate-group');
+var CRFGroupEl = document.getElementById('crf-group');
+var targetBitrateInputEl = document.getElementById('target-bitrate-input');
+var maxBitrateInputEl = document.getElementById('max-bitrate-input');
+var CRFInputEl = document.getElementById('crf-input');
+var presetSelectEl = document.getElementById('preset-select');
+
+var progressTextEl = document.getElementById('progress-text');
+var startButtonEl = document.getElementById('start-button');
+var cmdModButtonEl = document.getElementById('cmd-mod-button');
 
 var videoInputFilename = null;
 var videoOutputFilename = null;
@@ -41,7 +55,11 @@ var duration = {m: 0, s: 0};
 var assWidth = 0;
 var assHeight = 0;
 
+// flags
 var userChosenOutputPath = false;
+
+// cmd
+var command = '';
 
 // Display GPU infomation and ffmpeg/ffprobe version
 ipcRenderer.on('gpuinfo', (event, display_str, ffmpeg_version_str, ffprobe_version_str)=>{
@@ -100,6 +118,9 @@ chooseOutputButtonEl.addEventListener('click', ()=>{
         videoOutputFilename = filename;
         videoOutputFilenameEl.setAttribute('value', videoOutputFilename);
         userChosenOutputPath = true;
+
+        // update cmd
+        command = updateCmd();
     } else {
         console.log("User cancelled onput file selection.");
     }
@@ -153,6 +174,9 @@ function videoInputSelected(filepath) {
         videoOutputFilename = path.format(pathObj);
         videoOutputFilenameEl.setAttribute('value', videoOutputFilename);
     }
+
+    // update cmd
+    command = updateCmd();
 }
 
 function checkRes() {
@@ -191,6 +215,9 @@ function assInputSelected(filepath) {
         // check
         checkRes();
     });
+
+    // update cmd
+    command = updateCmd();
 }
 
 // Choose video input file, dragndrop
@@ -261,3 +288,82 @@ containerEl.ondrop = (event)=>{
     }
     
 };
+
+bitrateModeSelectEl.addEventListener('change', (event)=>{
+    let v = event.target.value;
+    if (v == 0 || v == 1) {
+        // target bitrate mode
+        targetBitrateGroupEl.removeAttribute('hidden');
+        maxBitrateGroupEl.removeAttribute('hidden');
+        CRFGroupEl.setAttribute('hidden', true);
+    } else if (v == 2 || v == 3) {
+        // CRF mode
+        targetBitrateGroupEl.setAttribute('hidden', true);
+        maxBitrateGroupEl.setAttribute('hidden', true);
+        CRFGroupEl.removeAttribute('hidden');
+    }
+
+    // update cmd
+    command = updateCmd();
+});
+
+targetBitrateInputEl.addEventListener('change', ()=>{
+    // update cmd
+    command = updateCmd();
+});
+
+maxBitrateInputEl.addEventListener('change', ()=>{
+    // update cmd
+    command = updateCmd();
+});
+
+CRFInputEl.addEventListener('change', ()=>{
+    // update cmd
+    command = updateCmd();
+});
+
+presetSelectEl.addEventListener('change', ()=>{
+    // update cmd
+    command = updateCmd();
+});
+
+cmdModButtonEl.addEventListener('click', ()=>{
+    ipcRenderer.send('open-cmd-mod', command);
+});
+
+function updateCmd() {
+    // verify parameters
+    if (videoInputFilename == null || assInputFilename == null || videoOutputFilename == null) {
+        startButtonEl.setAttribute('disabled', true);
+        return '';
+    }
+    
+    startButtonEl.removeAttribute('disabled');
+    let ret = cmd.cmdGen(videoInputFilename, assInputFilename, videoOutputFilename, bitrateModeSelectEl.value,
+        targetBitrateInputEl.value, maxBitrateInputEl.value, CRFInputEl.value, presetSelectEl.value);
+    console.log(ret);
+    return ret;
+}
+
+ipcRenderer.on('cmd-changed', (event, newCommand)=>{
+    command = newCommand;
+    console.log('modified cmd: ' + command);
+    
+    // disable all interactive elements
+    chooseVideoInputButtonEl.setAttribute('disabled', true);
+    chooseAssInputButtonEl.setAttribute('disabled', true);
+    chooseOutputButtonEl.setAttribute('disabled', true);
+    bitrateModeSelectEl.setAttribute('disabled', true);
+    targetBitrateInputEl.setAttribute('disabled', true);
+    maxBitrateInputEl.setAttribute('disabled', true);
+    CRFInputEl.setAttribute('disabled', true);
+    presetSelectEl.setAttribute('disabled', true);
+
+    // change the cmd-mod-button
+    cmdModButtonEl.innerHTML = '命令行已修改，无视所有设置'
+    cmdModButtonEl.classList.remove('btn-outline-info');
+    cmdModButtonEl.classList.add('btn-warning');
+
+    // enable the start button
+    startButtonEl.removeAttribute('disabled');
+});

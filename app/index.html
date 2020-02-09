@@ -18,7 +18,7 @@
                 font-size: 10;
             }
 
-            #bitrate-control-row .col {
+            #bitrate-control-row .col,.col-2 {
                 /* padding-right: 2px; */
                 padding-left: 2px;
             }
@@ -26,14 +26,6 @@
             #bitrate-control-row input {
                 padding-left: 5px;
                 padding-right: 5px;
-            }
-
-            #bitrate-mode-group {
-                width: 50%;
-            }
-
-            #target-bitrate-group,#max-bitrate-group {
-                width: 10%;
             }
         </style>
     </head>
@@ -95,8 +87,8 @@
                           <label class="input-group-text" for="bitrate-mode-select">码率模式</label>
                         </div>
                         <select class="custom-select" id="bitrate-mode-select">
-                          <option value="0">目标码率模式（1pass）</option>
-                          <option value="1" selected>目标码率模式（2pass）</option>
+                          <option value="0" selected>目标码率模式（1pass）</option>
+                          <option value="1">目标码率模式（2pass）</option>
                           <option value="2">CRF模式（1pass）</option>
                           <option value="3">CRF模式（2pass）</option>
                         </select>
@@ -124,7 +116,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col" id="crf-group" hidden>
+                <div class="col-2" id="crf-group" hidden>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text">CRF</span>
@@ -140,20 +132,20 @@
                           <label class="input-group-text" for="preset-select">Preset</label>
                         </div>
                         <select class="custom-select" id="preset-select">
-                          <option value="0">ultrafast</option>
-                          <option value="1">superfast</option>
-                          <option value="2">veryfast</option>
-                          <option value="3">faster</option>
-                          <option value="4">fast</option>
-                          <option value="5">medium</option>
-                          <option value="6" selected>slow</option>
-                          <option value="7">slower</option>
-                          <option value="8">veryslow</option>
+                          <option value="ultrafast">ultrafast</option>
+                          <option value="superfast">superfast</option>
+                          <option value="veryfast">veryfast</option>
+                          <option value="faster">faster</option>
+                          <option value="fast">fast</option>
+                          <option value="medium">medium</option>
+                          <option value="slow" selected>slow</option>
+                          <option value="slower">slower</option>
+                          <option value="veryslow">veryslow</option>
                         </select>
                     </div>
                 </div>
                 <div class="col">
-                    <button type="button" class="btn btn-outline-info btn-block">直接编辑命令行，会无视当前界面参数设置，进阶用户专用！！</button>
+                    <button type="button" class="btn btn-outline-info btn-block" id="cmd-mod-button">直接编辑命令行，会无视当前界面参数设置，进阶用户专用！！</button>
                 </div>
             </div>
             <div class="row mt-4">
@@ -164,7 +156,7 @@
                     </div>
                 </div>
                 <div class="col-2" style="padding-left: 0px;">
-                    <button type="button" class="btn btn-info" style="width: 100%;" disabled>开始</button>
+                    <button type="button" class="btn btn-info" style="width: 100%;" id="start-button" disabled>开始</button>
                 </div>
             </div>
         </div>

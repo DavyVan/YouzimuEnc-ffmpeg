@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <style>
+
+        </style>
+    </head>
+    <body>
+        <div class="container" style="max-width: 750px;">
+            <div class="row justify-content-center" style="margin-top: 10px;">
+                <div class="col form-group">
+                    <label for="cmd-textarea" style="font-size: 14px;">在此修改命令行将会无视主界面的所有设置，请谨慎修改，返回请点“取消”。</label>
+                    <textarea class="form-control" id="cmd-textarea" rows="14" style="resize: none; font-size: 14px;"></textarea>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-2">
+                    <button type="button" class="btn btn-info" style="width: 100%;" id="save-button">保存</button>
+                </div>
+                <div class="col-2"></div>
+                <div class="col-2">
+                    <button type="button" class="btn btn-danger" style="width: 100%;" id="cancel-button">取消</button>
+                </div>
+            </div>
+        </div>
+        <script src="js/cmd_mod.js"></script>
+    </body>
+</html>

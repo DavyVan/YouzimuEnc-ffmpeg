@@ -22,7 +22,17 @@ function getFFPROBE() {
     }
 }
 
+function escapeAssFilename(filename) {
+    // level 1
+    let t = filename;
+    t = t.replace(/'|\\|:/g, '\\$&');
+    // level 2
+    t = t.replace(/'|\\|:/g, '\\$&');
+    return t;
+}
+
 module.exports = {
     getFFMPEG: getFFMPEG,
-    getFFPROBE: getFFPROBE
+    getFFPROBE: getFFPROBE,
+    escapeAssFilename: escapeAssFilename
 };
