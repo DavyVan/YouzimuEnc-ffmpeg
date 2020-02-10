@@ -61,6 +61,8 @@ var userChosenOutputPath = false;
 // cmd
 var command = '';
 
+var runningProc = null;
+
 // Display GPU infomation and ffmpeg/ffprobe version
 ipcRenderer.on('gpuinfo', (event, display_str, ffmpeg_version_str, ffprobe_version_str)=>{
     document.getElementById('display-div').innerHTML = `${display_str} | ${ffmpeg_version_str} | ${ffprobe_version_str}`;
@@ -366,4 +368,35 @@ ipcRenderer.on('cmd-changed', (event, newCommand)=>{
 
     // enable the start button
     startButtonEl.removeAttribute('disabled');
+});
+
+startButtonEl.addEventListener('click', ()=>{
+    if (runningProc == null) {      // not running
+        let splitedCmd = cmd.splitCmd(command);
+        let binary = splitedCmd[0];
+        splitedCmd.splice(0, 1);
+        console.log(splitedCmd);
+
+        runningProc = child_process.spawn(binary, splitedCmd, { windowsVerbatimArguments: true });
+        startButtonEl.innerHTML = '取消';
+
+        runningProc.stderr.on('data', (data) => {
+            console.log(data.toString());
+            // TODO:
+        });
+
+        runningProc.on('error', (error) => {
+            progressTextAlert('运行FFMPEG错误');
+        });
+
+        runningProc.on('exit', (code, signal) => {
+            if (code != 0) {
+                progressTextAlert('运行FFMPEG错误');
+            }
+        });
+    } else {
+        runningProc.kill();
+        startButtonEl.innerHTML = '开始';
+        runningProc = null;
+    }
 });
