@@ -18,7 +18,7 @@ app.on('ready', function () {
     });
     mainWin.setMenu(null);
     mainWin.loadURL('file://' + __dirname + '/app/init.html');
-    mainWin.webContents.openDevTools({mode: 'detach'});
+    // mainWin.webContents.openDevTools({mode: 'detach'});
 
     ipcMain.on('init', (event, display_str, ffmpeg_version_str, ffprobe_version_str)=>{
         mainWin.webContents.loadURL('file://' + __dirname + '/app/index.html');
@@ -41,7 +41,7 @@ app.on('ready', function () {
         });
         cmdModWin.setMenu(null);
         cmdModWin.loadURL('file://' + __dirname + '/app/cmd_mod.html');
-        cmdModWin.webContents.openDevTools({mode: 'detach'});
+        // cmdModWin.webContents.openDevTools({mode: 'detach'});
 
         cmdModWin.webContents.on('did-finish-load', ()=>{
             cmdModWin.webContents.send('cmd', command);

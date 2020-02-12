@@ -39,6 +39,7 @@ var CRFInputEl = document.getElementById('crf-input');
 var presetSelectEl = document.getElementById('preset-select');
 
 var progressTextEl = document.getElementById('progress-text');
+var progressBarEl = document.getElementById('progress-bar');
 var startButtonEl = document.getElementById('start-button');
 var cmdModButtonEl = document.getElementById('cmd-mod-button');
 
@@ -50,7 +51,7 @@ var assInputFilename = null;
 var width = 0;
 var height = 0;
 var fps = 0.0;
-var duration = {m: 0, s: 0};
+var duration = {h: 0, m: 0, s: 0, totalSec: 0.0};
 // ass info
 var assWidth = 0;
 var assHeight = 0;
@@ -153,16 +154,18 @@ function videoInputSelected(filepath) {
         width = vStream.width;
         height = vStream.height;
         fps = eval(vStream.avg_frame_rate).toFixed(3);
-        duration.m = Math.floor(parseFloat(vStream.duration) / 60);
-        duration.s = Math.round(parseFloat(vStream.duration) - duration.m * 60);
+        duration.totalSec = parseFloat(vStream.duration)
+        duration.h = Math.floor(duration.totalSec / 3600);
+        duration.m = Math.floor(duration.totalSec / 60);
+        duration.s = Math.round(duration.totalSec - duration.m * 60);
 
         // display
         inputVideoFPSEl.innerHTML = fps;
         inputVideoResEl.innerHTML = `${width}x${height}`;
-        inputVideoDurationEl.innerHTML = `${duration.m}m${duration.s}s`;
+        inputVideoDurationEl.innerHTML = `${duration.h}h${duration.m}m${duration.s}s`;
         outputVideoFPSEl.innerHTML = fps;
         outputVideoResEl.innerHTML = `${width}x${height}`;
-        outputVideoDurationEl.innerHTML = `${duration.m}m${duration.s}s`;
+        outputVideoDurationEl.innerHTML = `${duration.h}h${duration.m}m${duration.s}s`;
 
         // check resolution against subtitle
         checkRes();
@@ -370,6 +373,7 @@ ipcRenderer.on('cmd-changed', (event, newCommand)=>{
     startButtonEl.removeAttribute('disabled');
 });
 
+var _output = '';
 startButtonEl.addEventListener('click', ()=>{
     if (runningProc == null) {      // not running
         let splitedCmd = cmd.splitCmd(command);
@@ -381,8 +385,35 @@ startButtonEl.addEventListener('click', ()=>{
         startButtonEl.innerHTML = '取消';
 
         runningProc.stderr.on('data', (data) => {
-            console.log(data.toString());
-            // TODO:
+            let _data = data.toString();
+            console.log(_data);
+            if (_output != '') {
+                _data = _output + _data;
+                _output = '';
+            }
+            if (_data.match(/speed=[0-9.]+x/) == null) {
+                _output += _data;
+                return;
+            }
+            
+            console.log(_data);
+            let __data = _data;
+            
+            _data = _data.match(/time=[0-9:.]+/);
+            if (_data != null) {
+                _data = _data[0].match(/[0-9:.]+/)[0].split(':');
+                let hh = parseInt(_data[0]);
+                let mm = parseInt(_data[1]);
+                let ss = parseFloat(_data[2]);
+
+                // convert to seconds
+                ss += hh*3600 + mm*60;
+                // calculate progress in float/percent
+                let progress = ss / duration.totalSec;
+                // display
+                progressTextEl.innerHTML = __data;
+                progressBarEl.style.width = `${Math.round(progress*100)}%`;
+            }
         });
 
         runningProc.on('error', (error) => {
@@ -392,11 +423,18 @@ startButtonEl.addEventListener('click', ()=>{
         runningProc.on('exit', (code, signal) => {
             if (code != 0) {
                 progressTextAlert('运行FFMPEG错误');
+            } else {
+                progressBarEl.style.width = '0%';
+                progressTextAlertClear();
+                startButtonEl.innerHTML = '开始';
+                runningProc = null;
             }
         });
     } else {
         runningProc.kill();
+        progressBarEl.style.width = '0%';
         startButtonEl.innerHTML = '开始';
         runningProc = null;
+        progressTextAlertClear();
     }
 });

@@ -2,14 +2,15 @@
 
 const process = require('process');
 const path = require('path');
+const app = require('electron').remote.app;
 
 function getFFMPEG() {
     let os = process.platform;
 
     if (os == 'darwin') {   // macOS
-        return path.resolve('bin/ffmpeg');
+        return path.resolve(app.getAppPath() + '/bin/ffmpeg');
     } else if (os == 'win32') {
-        return path.resolve('bin/ffmpeg.exe');
+        return path.resolve(app.getAppPath() + '/bin/ffmpeg.exe');
     }
 }
 
@@ -17,9 +18,9 @@ function getFFPROBE() {
     let os = process.platform;
 
     if (os == 'darwin') {   // macOS
-        return path.resolve('bin/ffprobe');
+        return path.resolve(app.getAppPath() + '/bin/ffprobe');
     } else if (os == 'win32') {
-        return path.resolve('bin/ffprobe.exe');
+        return path.resolve(app.getAppPath() + '/bin/ffprobe.exe');
     }
 }
 

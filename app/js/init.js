@@ -1,7 +1,7 @@
 'use strict';
 const process = require('process');
 const child_process = require('child_process');
-const {ipcRenderer} = require('electron');
+const {ipcRenderer, remote} = require('electron');
 const utils = require('./js/utils.js');
 
 // Check the OS
@@ -16,7 +16,7 @@ if (os === 'darwin') {
 } else if (os === 'win32') {   // Only check nvidia gpu on Windows
     
     try {
-        stdout = child_process.execFileSync('cpputils/gpuquery.exe', { windowsHide: true });
+        stdout = child_process.execFileSync(remote.app.getAppPath() + '/cpputils/gpuquery.exe', { windowsHide: true });
     } catch (error) {
         document.getElementById('text').innerHTML = `检测硬件时错误<br>错误代码：${error.code}<br>错误信息：${error.message}`;
         throw error;    // To terminate the script execution

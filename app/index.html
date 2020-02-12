@@ -27,6 +27,10 @@
                 padding-left: 5px;
                 padding-right: 5px;
             }
+
+            #notes p {
+                margin-bottom: 0px;
+            }
         </style>
     </head>
     <body>
@@ -49,7 +53,7 @@
                 <div class="col text-center">
                     <span style="margin-right: 20px;">输入视频 帧率：<span id="input-video-fps">--</span> FPS</span>
                     <span style="margin-right: 20px;">分辨率：<span id="input-video-res">----x----</span></span>
-                    <span>时长：<span id="input-video-duration">--m--s</span></span>
+                    <span>时长：<span id="input-video-duration">--h--m--s</span></span>
                 </div>
             </div>
             <div class="input-group mt-3" id="ass-input-group">
@@ -77,7 +81,7 @@
                 <div class="col text-center">
                     <span style="margin-right: 20px;">输出视频 帧率：<span id="output-video-fps">--</span> FPS</span>
                     <span style="margin-right: 20px;">分辨率：<span id="output-video-res">----x----</span></span>
-                    <span>时长：<span id="output-video-duration">--m--s</span></span>
+                    <span>时长：<span id="output-video-duration">--h--m--s</span></span>
                 </div>
             </div>
             <div class="row mt-3" id="bitrate-control-row">
@@ -149,14 +153,25 @@
                 </div>
             </div>
             <div class="row mt-4">
-                <div class="col-10">
-                    <div class="progress" style="height: 100%;">
-                        <div class="text-center" style="position: absolute; width: 100%;"><span style="font-size: 20px;" id="progress-text"></span></div>
+                <div class="col">
+                    <div class="progress" style="height: 25px;">
+                        <div class="text-center" style="position: absolute; width: 100%; left: 0px; right: 0px;"><span style="font-size: 15px;" id="progress-text"></span></div>
                         <div class="progress-bar bg-info" role="progressbar" style="width: 0%;" id="progress-bar"></div>
                     </div>
                 </div>
+            </div>
+            <div class="row mt-4 justify-content-center">
                 <div class="col-2" style="padding-left: 0px;">
                     <button type="button" class="btn btn-info" style="width: 100%;" id="start-button" disabled>开始</button>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col" style="font-size: 15px;" id="notes">
+                    <p>说明：</p>
+                    <p>1. 本软件作者是退役成员FQ，仅对柚子木字幕组之用途提供支持。</p>
+                    <p>2. 本软件旨在通过NVIDIA显卡和NVENC编码器加速编码过程，但编码效率略低于x264。</p>
+                    <p>3. 选择文件可以拖拽到本窗口任意位置，支持同时拖拽一个MP4文件和一个ASS字幕文件。输出位置默认根据输入视频的位置设定。</p>
+                    <p>4. 命令行编辑模式中，一旦修改了命令行，将会无视所有设置直接执行用户输入的命令，所以确保命令输入完整且正确。</p>
                 </div>
             </div>
         </div>
