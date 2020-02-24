@@ -27,9 +27,9 @@ function getFFPROBE() {
 function escapeAssFilename(filename) {
     // level 1
     let t = filename;
-    t = t.replace(/'|\\|:/g, '\\$&');
+    t = t.replace(/'|\\|:|,/g, '\\$&');
     // level 2
-    t = t.replace(/'|\\|:/g, '\\$&');
+    t = t.replace(/'|\\|:|,/g, '\\$&');
     return t;
 }
 
