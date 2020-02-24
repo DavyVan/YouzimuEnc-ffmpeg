@@ -1,6 +1,6 @@
 {
   "name": "youzimuenc-ffmpeg",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This is a ffmpeg driven GUI interface for Youzimu (柚子木字幕组)",
   "main": "main.js",
   "scripts": {
